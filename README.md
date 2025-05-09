@@ -13,6 +13,84 @@ To write a YACC program to recognize the grammar anb where n>=10.
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter a string as input and it is identified as valid or invalid.
 # PROGRAM:
+FLEX FILE
+`````````
+%{
+#include <stdio.h>
+#include <stdlib.h>
+int count = 0;
+%}
+
+%token A B
+
+%%
+start:
+    sequence B '\n' {
+        if (count >= 10) {
+            printf("Valid string: %d a's followed by b\n", count);
+        } else {
+            printf("Invalid: Less than 10 a's\n");
+        }
+        count = 0;
+    }
+    ;
+
+sequence:
+    A { count++; }
+  | sequence A { count++; }
+  ;
+%%
+
+int main() {
+    printf("Enter a string (aⁿb where n >= 10):\n");
+    yyparse();
+    return 0;
+}
+
+void yyerror(const char *msg) {
+    fprintf(stderr, "Syntax error: %s\n", msg);
+}
+```````````````
+BISON FILE
+``````````````````````
+%{
+#include <stdio.h>
+#include <stdlib.h>
+int count = 0;  // to count number of a's
+%}
+
+%token A B
+
+%%
+start:
+    sequence B '\n' {
+        if (count >= 10) {
+            printf("Valid string: %d a's followed by b\n", count);
+        } else {
+            printf("Invalid: Less than 10 a's\n");
+        }
+        count = 0; // reset for next input
+    }
+    ;
+
+sequence:
+    A { count++; }
+  | sequence A { count++; }
+  ;
+%%
+
+int main() {
+    printf("Enter a string (aⁿb where n >= 10):\n");
+    return yyparse();
+}
+
+void yyerror(const char *msg) {
+    printf("Syntax error: %s\n", msg);
+}
+````````````````````````````
+
 # OUTPUT
+![image](https://github.com/user-attachments/assets/72e83216-5e50-4889-98b6-210ca1b97c0e)
+
 # RESULT
 The YACC program to recognize the grammar anb where n>=10 is executed successfully and the output is verified.
